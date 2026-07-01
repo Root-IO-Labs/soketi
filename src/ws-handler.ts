@@ -9,12 +9,12 @@ import { PresenceMemberInfo } from './channels/presence-channel-manager';
 import { PrivateChannelManager } from './channels';
 import { PublicChannelManager } from './channels';
 import { PusherMessage, uWebSocketMessage } from './message';
+import { PusherToken } from './pusher-protocol';
 import { Server } from './server';
 import { Utils } from './utils';
 import { WebSocket } from 'uWebSockets.js';
 
 const ab2str = require('arraybuffer-to-string');
-const Pusher = require('pusher');
 
 export class WsHandler {
     /**
@@ -771,7 +771,7 @@ export class WsHandler {
     protected signinTokenForUserData(ws: WebSocket, userData: string): Promise<string> {
         return new Promise(resolve => {
             let decodedString = `${ws.id}::user::${userData}`;
-            let token = new Pusher.Token(ws.app.key, ws.app.secret);
+            let token = new PusherToken(ws.app.key, ws.app.secret);
 
             resolve(
                 ws.app.key + ':' + token.sign(decodedString)
