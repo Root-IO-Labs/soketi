@@ -1,6 +1,7 @@
 import { HttpResponse } from 'uWebSockets.js';
 import { Lambda } from 'aws-sdk';
 import { Server } from './server';
+import { pureJsMD5 } from './pure-js-md5';
 
 const Pusher = require('pusher');
 const pusherUtil = require('pusher/lib/util');
@@ -274,7 +275,20 @@ export class App implements AppInterface {
         delete params['channelName'];
 
         if (res.rawBody || res.query['body_md5']) {
-            params['body_md5'] = pusherUtil.getMD5(res.rawBody || '');
+            try {
+                params['body_md5'] = pusherUtil.getMD5(res.rawBody || '');
+            } catch (e) {
+                // MD5 is unavailable under a strict FIPS crypto provider
+                // (ERR_OSSL_EVP_UNSUPPORTED). body_md5 is a Pusher wire-
+                // protocol request-integrity checksum, not a security
+                // boundary, and every real Pusher client sends it
+                // unconditionally with no way to opt out — so falling
+                // back to a pure-JS MD5 (no native OpenSSL/wolfSSL
+                // involvement) here preserves REST API compatibility
+                // without touching the FIPS boundary for actual security
+                // operations (TLS, webhook HMAC signing, etc).
+                params['body_md5'] = pureJsMD5(res.rawBody || '');
+            }
         }
 
         return this.signingToken(
