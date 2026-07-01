@@ -1,8 +1,12 @@
 import { App } from '../app';
 import { JoinResponse, PublicChannelManager } from './public-channel-manager';
 import { PusherMessage } from '../message';
-import { PusherToken } from '../pusher-protocol';
 import { WebSocket } from 'uWebSockets.js';
+
+// pusher/lib/token only requires Node's native `crypto` module — see
+// ../app.ts for why this imports the submodule directly instead of
+// `require('pusher')` (which would load "tweetnacl" unconditionally).
+const PusherToken = require('pusher/lib/token');
 
 export class PrivateChannelManager extends PublicChannelManager {
     /**

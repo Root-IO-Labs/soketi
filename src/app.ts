@@ -1,7 +1,17 @@
 import { HttpResponse } from 'uWebSockets.js';
 import { Lambda } from 'aws-sdk';
 import { Server } from './server';
-import { PusherToken, getMD5, toOrderedArray } from './pusher-protocol';
+import { pureJsMD5 } from './pure-js-md5';
+
+// Import pusher's Token/util submodules directly (NOT `require('pusher')`,
+// which loads the package's main entry point -> lib/events.js ->
+// "tweetnacl", a pure-JS crypto library that would otherwise execute
+// inside this process at every startup regardless of whether encrypted
+// channels are ever used). token.js and util.js only require Node's
+// native `crypto` module, so this stays entirely within the FIPS
+// provider's boundary.
+const PusherToken = require('pusher/lib/token');
+const pusherUtil = require('pusher/lib/util');
 
 export interface AppInterface {
     id: string;
@@ -272,20 +282,26 @@ export class App implements AppInterface {
         delete params['channelName'];
 
         if (res.rawBody || res.query['body_md5']) {
-            // getMD5() falls back to a pure-JS MD5 when native MD5 is
-            // unavailable under a strict FIPS crypto provider
-            // (ERR_OSSL_EVP_UNSUPPORTED). body_md5 is a Pusher wire-
-            // protocol request-integrity checksum, not a security
-            // boundary, and every real Pusher client sends it
-            // unconditionally with no way to opt out — see
-            // pusher-protocol.ts for the full reasoning.
-            params['body_md5'] = getMD5(res.rawBody || '');
+            try {
+                params['body_md5'] = pusherUtil.getMD5(res.rawBody || '');
+            } catch (e) {
+                // MD5 is unavailable under a strict FIPS crypto provider
+                // (ERR_OSSL_EVP_UNSUPPORTED). body_md5 is a Pusher wire-
+                // protocol request-integrity checksum, not a security
+                // boundary, and every real Pusher client sends it
+                // unconditionally with no way to opt out — so falling
+                // back to a pure-JS MD5 (no native OpenSSL/wolfSSL
+                // involvement) here preserves REST API compatibility
+                // without touching the FIPS boundary for actual security
+                // operations (TLS, webhook HMAC signing, etc).
+                params['body_md5'] = pureJsMD5(res.rawBody || '');
+            }
         }
 
         return this.signingToken(
             res.method,
             res.url,
-            toOrderedArray(params).join('&'),
+            pusherUtil.toOrderedArray(params).join('&'),
         );
     }
 

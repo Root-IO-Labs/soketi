@@ -9,12 +9,15 @@ import { PresenceMemberInfo } from './channels/presence-channel-manager';
 import { PrivateChannelManager } from './channels';
 import { PublicChannelManager } from './channels';
 import { PusherMessage, uWebSocketMessage } from './message';
-import { PusherToken } from './pusher-protocol';
 import { Server } from './server';
 import { Utils } from './utils';
 import { WebSocket } from 'uWebSockets.js';
 
 const ab2str = require('arraybuffer-to-string');
+// pusher/lib/token only requires Node's native `crypto` module — see
+// app.ts for why this imports the submodule directly instead of
+// `require('pusher')` (which would load "tweetnacl" unconditionally).
+const PusherToken = require('pusher/lib/token');
 
 export class WsHandler {
     /**
