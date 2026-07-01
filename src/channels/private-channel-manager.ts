@@ -1,9 +1,8 @@
 import { App } from '../app';
 import { JoinResponse, PublicChannelManager } from './public-channel-manager';
 import { PusherMessage } from '../message';
+import { PusherToken } from '../pusher-protocol';
 import { WebSocket } from 'uWebSockets.js';
-
-const Pusher = require('pusher');
 
 export class PrivateChannelManager extends PublicChannelManager {
     /**
@@ -50,7 +49,7 @@ export class PrivateChannelManager extends PublicChannelManager {
      */
     protected getExpectedSignature(app: App, socketId: string, message: PusherMessage): Promise<string> {
         return new Promise(resolve => {
-            let token = new Pusher.Token(app.key, app.secret);
+            let token = new PusherToken(app.key, app.secret);
 
             resolve(
                 app.key + ':' + token.sign(this.getDataToSignForSignature(socketId, message))
