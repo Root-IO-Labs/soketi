@@ -19,7 +19,7 @@ export class PresenceChannelManager extends PrivateChannelManager {
     /**
      * Join the connection to the channel.
      */
-    join(ws: WebSocket, channel: string, message?: PusherMessage): Promise<JoinResponse> {
+    join(ws: WebSocket<any>, channel: string, message?: PusherMessage): Promise<JoinResponse> {
         return this.server.adapter.getChannelMembersCount(ws.app.id, channel).then(membersCount => {
             if (membersCount + 1 > ws.app.maxPresenceMembersPerChannel) {
                 return {
@@ -73,7 +73,7 @@ export class PresenceChannelManager extends PrivateChannelManager {
     /**
      * Mark the connection as closed and unsubscribe it.
      */
-    leave(ws: WebSocket, channel: string): Promise<LeaveResponse> {
+    leave(ws: WebSocket<any>, channel: string): Promise<LeaveResponse> {
         return super.leave(ws, channel).then(response => {
             return {
                 ...response,

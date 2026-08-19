@@ -12,7 +12,7 @@ export class PrivateChannelManager extends PublicChannelManager {
     /**
      * Join the connection to the channel.
      */
-    join(ws: WebSocket, channel: string, message?: PusherMessage): Promise<JoinResponse> {
+    join(ws: WebSocket<any>, channel: string, message?: PusherMessage): Promise<JoinResponse> {
         let passedSignature = message?.data?.auth;
 
         return this.signatureIsValid(ws.app, ws.id, message, passedSignature).then(isValid => {

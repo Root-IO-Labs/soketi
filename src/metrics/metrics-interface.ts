@@ -10,12 +10,12 @@ export interface MetricsInterface {
     /**
      * Handle a new connection.
      */
-    markNewConnection(ws: WebSocket): void;
+    markNewConnection(ws: WebSocket<any>): void;
 
     /**
      * Handle a disconnection.
      */
-    markDisconnection(ws: WebSocket): void;
+    markDisconnection(ws: WebSocket<any>): void;
 
     /**
      * Handle a new API message event being received and sent out.

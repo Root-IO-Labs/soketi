@@ -57,7 +57,7 @@ export interface RequestBody extends RequestOptions {
 
 export interface Response {
     requestId: string;
-    sockets?: Map<string, WebSocket>;
+    sockets?: Map<string, WebSocket<any>>;
     members?: [string, PresenceMemberInfo][];
     channels?: [string, string[]][];
     channelsWithSocketsCount?: [string, number][];
@@ -307,7 +307,7 @@ export abstract class HorizontalAdapter extends LocalAdapter {
     /**
      * Get all sockets from the namespace.
      */
-    async getSockets(appId: string, onlyLocal = false): Promise<Map<string, WebSocket>> {
+    async getSockets(appId: string, onlyLocal = false): Promise<Map<string, WebSocket<any>>> {
         return new Promise((resolve, reject) => {
             super.getSockets(appId, true).then(localSockets => {
                 if (onlyLocal) {
@@ -415,7 +415,7 @@ export abstract class HorizontalAdapter extends LocalAdapter {
     /**
      * Get all the channel sockets associated with a namespace.
      */
-    async getChannelSockets(appId: string, channel: string, onlyLocal = false): Promise<Map<string, WebSocket>> {
+    async getChannelSockets(appId: string, channel: string, onlyLocal = false): Promise<Map<string, WebSocket<any>>> {
         return new Promise((resolve, reject) => {
             super.getChannelSockets(appId, channel).then(localSockets => {
                 if (onlyLocal) {
@@ -574,7 +574,7 @@ export abstract class HorizontalAdapter extends LocalAdapter {
         switch (request.type) {
             case RequestType.SOCKETS:
                 this.processRequestFromAnotherInstance(request, () => super.getSockets(appId, true).then(sockets => {
-                    let localSockets: WebSocket[] = Array.from(sockets.values());
+                    let localSockets: WebSocket<any>[] = Array.from(sockets.values());
 
                     return {
                         sockets: localSockets.map(ws => ({
@@ -590,7 +590,7 @@ export abstract class HorizontalAdapter extends LocalAdapter {
 
             case RequestType.CHANNEL_SOCKETS:
                 this.processRequestFromAnotherInstance(request, () => super.getChannelSockets(appId, request.opts.channel).then(sockets => {
-                    let localSockets: WebSocket[] = Array.from(sockets.values());
+                    let localSockets: WebSocket<any>[] = Array.from(sockets.values());
 
                     return {
                         sockets: localSockets.map(ws => ({

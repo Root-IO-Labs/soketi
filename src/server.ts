@@ -625,9 +625,9 @@ export class Server {
                     idleTimeout: 120, // According to protocol
                     maxBackpressure: 1024 * 1024,
                     maxPayloadLength: 100 * 1024 * 1024, // 100 MB
-                    message: (ws: WebSocket, message: uWebSocketMessage, isBinary: boolean) => this.wsHandler.onMessage(ws, message, isBinary),
-                    open: (ws: WebSocket) => this.wsHandler.onOpen(ws),
-                    close: (ws: WebSocket, code: number, message: uWebSocketMessage) => this.wsHandler.onClose(ws, code, message),
+                    message: (ws: WebSocket<any>, message: uWebSocketMessage, isBinary: boolean) => this.wsHandler.onMessage(ws, message, isBinary),
+                    open: (ws: WebSocket<any>) => this.wsHandler.onOpen(ws),
+                    close: (ws: WebSocket<any>, code: number, message: uWebSocketMessage) => this.wsHandler.onClose(ws, code, message),
                     upgrade: (res: HttpResponse, req: HttpRequest, context) => this.wsHandler.handleUpgrade(res, req, context),
                 });
             }

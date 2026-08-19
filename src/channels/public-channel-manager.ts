@@ -5,7 +5,7 @@ import { Utils } from '../utils';
 import { WebSocket } from 'uWebSockets.js';
 
 export interface JoinResponse {
-    ws: WebSocket;
+    ws: WebSocket<any>;
     success: boolean;
     channelConnections?: number;
     authError?: boolean;
@@ -29,7 +29,7 @@ export class PublicChannelManager {
     /**
      * Join the connection to the channel.
      */
-    join(ws: WebSocket, channel: string, message?: PusherMessage): Promise<JoinResponse> {
+    join(ws: WebSocket<any>, channel: string, message?: PusherMessage): Promise<JoinResponse> {
         if (Utils.restrictedChannelName(channel)) {
             return Promise.resolve({
                 ws,
@@ -60,7 +60,7 @@ export class PublicChannelManager {
     /**
      * Mark the connection as closed and unsubscribe it.
      */
-    leave(ws: WebSocket, channel: string): Promise<LeaveResponse> {
+    leave(ws: WebSocket<any>, channel: string): Promise<LeaveResponse> {
         return this.server.adapter.removeFromChannel(ws.app.id, channel, ws.id).then((remainingConnections) => {
             return {
                 left: true,

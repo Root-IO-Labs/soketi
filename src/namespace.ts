@@ -10,7 +10,7 @@ export class Namespace {
     /**
      * The list of sockets connected to the namespace.
      */
-    public sockets: Map<string, WebSocket> = new Map();
+    public sockets: Map<string, WebSocket<any>> = new Map();
 
     /**
      * The list of user IDs and their associated socket ids.
@@ -27,14 +27,14 @@ export class Namespace {
     /**
      * Get all sockets from this namespace.
      */
-    getSockets(): Promise<Map<string, WebSocket>> {
+    getSockets(): Promise<Map<string, WebSocket<any>>> {
         return Promise.resolve(this.sockets);
     }
 
     /**
      * Add a new socket to the namespace.
      */
-    addSocket(ws: WebSocket): Promise<boolean> {
+    addSocket(ws: WebSocket<any>): Promise<boolean> {
         return new Promise(resolve => {
             this.sockets.set(ws.id, ws);
             resolve(true);
@@ -54,7 +54,7 @@ export class Namespace {
      * Add a socket ID to the channel identifier.
      * Return the total number of connections after the connection.
      */
-    addToChannel(ws: WebSocket, channel: string): Promise<number> {
+    addToChannel(ws: WebSocket<any>, channel: string): Promise<number> {
         return new Promise(resolve => {
             if (!this.channels.has(channel)) {
                 this.channels.set(channel, new Set);
@@ -132,10 +132,10 @@ export class Namespace {
     /**
      * Get all the channel sockets associated with this namespace.
      */
-    getChannelSockets(channel: string): Promise<Map<string, WebSocket>> {
+    getChannelSockets(channel: string): Promise<Map<string, WebSocket<any>>> {
         return new Promise(resolve => {
             if (!this.channels.has(channel)) {
-                return resolve(new Map<string, WebSocket>());
+                return resolve(new Map<string, WebSocket<any>>());
             }
 
             let wsIds = this.channels.get(channel);
@@ -147,7 +147,7 @@ export class Namespace {
                     }
 
                     return sockets.set(wsId, this.sockets.get(wsId));
-                }, new Map<string, WebSocket>())
+                }, new Map<string, WebSocket<any>>())
             );
         });
     }
@@ -197,7 +197,7 @@ export class Namespace {
     /**
      * Add to the users list the associated socket connection ID.
      */
-    addUser(ws: WebSocket): Promise<void> {
+    addUser(ws: WebSocket<any>): Promise<void> {
         if (!ws.user) {
             return Promise.resolve();
         }
@@ -216,7 +216,7 @@ export class Namespace {
     /**
      * Remove the user associated with the connection ID.
      */
-    removeUser(ws: WebSocket): Promise<void> {
+    removeUser(ws: WebSocket<any>): Promise<void> {
         if (!ws.user) {
             return Promise.resolve();
         }
@@ -235,7 +235,7 @@ export class Namespace {
     /**
      * Get the sockets associated with an user.
      */
-    getUserSockets(userId: string|number): Promise<Set<WebSocket>> {
+    getUserSockets(userId: string|number): Promise<Set<WebSocket<any>>> {
         let wsIds = this.users.get(userId);
 
         if (!wsIds || wsIds.size === 0) {
@@ -247,7 +247,7 @@ export class Namespace {
                 sockets.add(this.sockets.get(wsId));
 
                 return sockets;
-            }, new Set<WebSocket>())
+            }, new Set<WebSocket<any>>())
         );
     }
 }

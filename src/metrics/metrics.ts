@@ -25,7 +25,7 @@ export class Metrics implements MetricsInterface {
     /**
      * Handle a new connection.
      */
-    markNewConnection(ws: WebSocket): void {
+    markNewConnection(ws: WebSocket<any>): void {
         if (this.server.options.metrics.enabled) {
             this.driver.markNewConnection(ws);
         }
@@ -34,7 +34,7 @@ export class Metrics implements MetricsInterface {
     /**
      * Handle a disconnection.
      */
-    markDisconnection(ws: WebSocket): void {
+    markDisconnection(ws: WebSocket<any>): void {
         if (this.server.options.metrics.enabled) {
             this.driver.markDisconnection(ws);
         }
