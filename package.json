@@ -1,6 +1,6 @@
 {
   "name": "@soketi/soketi",
-  "version": "0.0.0-dev",
+  "version": "1.6.1",
   "description": "Just another simple, fast, and resilient open-source WebSockets server.",
   "repository": {
     "type": "git",
@@ -34,7 +34,7 @@
     "ioredis": "^5.0.4",
     "knex": "^3.0.1",
     "mysql": "^2.18.1",
-    "mysql2": "^3.5.2",
+    "mysql2": "^3.9.8",
     "node-discover": "^1.2.1",
     "pg": "^8.7.1",
     "pm2": "^5.3.0",
@@ -45,7 +45,7 @@
     "rate-limiter-flexible": "^2.3.8",
     "sqs-consumer": "^5.7.0",
     "uuid": "^8.3.2",
-    "uWebSockets.js": "https://github.com/uNetworking/uWebSockets.js.git#v20.10.0",
+    "uWebSockets.js": "https://github.com/uNetworking/uWebSockets.js.git#v20.69.0",
     "yargs": "^17.5.1"
   },
   "devDependencies": {
@@ -89,5 +89,12 @@
   },
   "peerDependencies": {
     "@pm2/agent": "^2.0.3"
+  },
+  "overrides": {
+    "axios": "$axios",
+    "ip": "2.0.0",
+    "msgpackr@1.7.2": "1.10.1",
+    "semver@6.3.0": "6.3.1",
+    "systeminformation@5.12.13": "5.31.7"
   }
 }
